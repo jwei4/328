@@ -10,8 +10,8 @@ private:
 	Vec3 accumulated_normal; // used for OpenGL soft shading
 public:
 	Particle(Vec3 pos);
-	Particle();
-	~Particle();
+	Particle(){};
+	~Particle(){};
 	void addForce(Vec3 f);
 	void timeStep();
 	Vec3& getPos();

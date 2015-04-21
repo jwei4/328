@@ -21,8 +21,8 @@ private:
 	void drawTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 color);
 	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 direction);
 public:
-	Cloth();
-	~Cloth();
+	Cloth(){};
+	~Cloth(){};
 	Cloth(float width, float height, int num_particles_width, int num_particles_height);
 	void drawWire();
 	void drawShaded();

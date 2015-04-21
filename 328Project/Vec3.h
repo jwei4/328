@@ -5,8 +5,8 @@ class Vec3 {
 public:
 	float f[3];
 	Vec3(float x, float y, float z);
-	Vec3();
-	~Vec3();
+	Vec3(){};
+	~Vec3(){};
 	float length();
 	Vec3 normalized();
 	void operator+= (const Vec3 &v);

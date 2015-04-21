@@ -20,6 +20,7 @@ float tearingThreshold = 5;			//5-10%
 float modelTransThreshold = 4.5;	//4.5-9%
 float N_proj = 30;					//30-50
 
+int dragging = 1;
 
 Cloth cloth1(14,10,55,45); // one Cloth object of the Cloth class
 Vec3 ball_pos(7,-5,0);
@@ -34,13 +35,18 @@ void drawThings() {
 
 void Mouse(int button, int state, int x, int y) {
     if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		dragging = 1;
         mouse_x = (float) x;
         mouse_y = (float) y;
     }
+	else{
+		dragging = 0;
+	}
 }
 
 // Call-back function glutMouseFunc();
 void MouseMotion(int x, int y) {
+	if(dragging){
     rotation_x += (float) x - mouse_x;
     rotation_y += (float) y - mouse_y;
 
@@ -48,6 +54,7 @@ void MouseMotion(int x, int y) {
     mouse_y = (float) y;
 
     glutPostRedisplay(); // for redraw the current mouse position;
+	}
 };
 
 void keyboard( unsigned char key, int x, int y ) {
@@ -146,7 +153,7 @@ int main (int argc, char** argv) {
 	glutReshapeFunc (winReshapeFcn);
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(Mouse);
-    glutMotionFunc(MouseMotion);
+	glutMotionFunc(MouseMotion);
 
 	glEnable(GL_DEPTH_TEST);
 
