@@ -14,7 +14,7 @@ using namespace std;
 static float mouse_x(0.0), mouse_y(0.0);
 static float rotation_x(0.0),rotation_y(0.0);
 static int win_width(1280), win_height(700);
-static float thickness = 0.01, arealDensity  = 0.25, k_struct = 6000, k_bend = 5.0, k_shear = 2.0, theta_dist = 0.02;
+static float arealDensity  = 0.25, k_struct = 6000, k_bend = 5.0, k_shear = 2.0, theta_dist = 0.02;
 float yarnPerUnitLength = 10;		//10-15 cm
 float tearingThreshold = 5;			//5-10% 
 float modelTransThreshold = 4.5;	//4.5-9%
@@ -22,15 +22,16 @@ float N_proj = 30;					//30-50
 
 int dragging = 1;
 
-Cloth cloth1(14,10,55,45); // one Cloth object of the Cloth class
+Cloth cloth1(15, 15); // one Cloth object of the Cloth class
 Vec3 ball_pos(7,-5,0);
-float ball_radius = 2;
+float ball_radius = 3;
+float ball_time = 0;
 
 //Draw Stuff
 void drawThings() {
 	//glutWireCube(2.0);
-	cloth1.drawShaded();
-	//cloth1.drawWire(); 
+	//cloth1.drawShaded();
+	cloth1.drawWire(); 
 }
 
 void Mouse(int button, int state, int x, int y) {
@@ -41,6 +42,10 @@ void Mouse(int button, int state, int x, int y) {
     }
 	else{
 		dragging = 0;
+	}
+	if(button == GLUT_LEFT_BUTTON){
+		cout << "HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY";
+		cout << "x: " << x << " y: " << y;
 	}
 }
 
@@ -102,15 +107,11 @@ void winReshapeFcn (int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-float ball_time = 0;
-
 void display(void) {
-
 	ball_time++;
-	ball_pos.f[2] = cos(ball_time/50.0)*7;
+	ball_pos.f[2] = cos(ball_time/100.0)*7;
 
 	cloth1.addForce(Vec3(0,-0.2,0)*TIME_STEPSIZE2);
-	//cloth1.windForce(Vec3(0.5, 0, 0.2)*TIME_STEPSIZE2);
 	cloth1.timeStep();
 	cloth1.ballCollision(ball_pos, ball_radius);
 

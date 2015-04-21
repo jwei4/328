@@ -4,6 +4,7 @@
 #define DAMPING 0.01				// Damping for particle
 #define TIME_STEPSIZE2 0.5*0.5		// timestep for particle
 #define CONSTRAINT_ITERATIONS 15    // iterations of constraint satisfaction each frame
+#define THICKNESS .5
 
 class Project {
 	void drawThings();

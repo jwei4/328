@@ -19,16 +19,15 @@ private:
 	void drawLine(Particle *p1, Particle *p2);
 	Vec3 calcLineNormal(Particle *p1,Particle *p2);
 	void drawTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 color);
-	void addWindForcesForTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 direction);
 public:
 	Cloth(){};
 	~Cloth(){};
+	Cloth(float width, float height);
 	Cloth(float width, float height, int num_particles_width, int num_particles_height);
 	void drawWire();
 	void drawShaded();
 	void timeStep();
 	void addForce(const Vec3 direction);
-	void windForce(const Vec3 direction);
 	void ballCollision(const Vec3 center, const float radius);
 };
 
