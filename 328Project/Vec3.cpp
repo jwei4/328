@@ -54,3 +54,7 @@ Vec3 Vec3::cross(const Vec3 &v) {
 float Vec3::dot(const Vec3 &v) {
 	return f[0]*v.f[0] + f[1]*v.f[1] + f[2]*v.f[2];
 }
+
+float Vec3::distance(const Vec3 &v){
+	return sqrt( pow((v.f[0]-f[0]), 2) + pow((v.f[1]-f[1]), 2) + pow((v.f[2]-f[2]), 2));
+}

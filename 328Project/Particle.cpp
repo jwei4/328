@@ -1,10 +1,13 @@
 #include "Vec3.h"
 #include "Project.h"
 #include "Particle.h"
+#include <iostream>
 
 
 
-Particle::Particle(Vec3 pos) : pos(pos), old_pos(pos),acceleration(Vec3(0,0,0)), mass(1), movable(true), accumulated_normal(Vec3(0,0,0)){}
+Particle::Particle(Vec3 pos) : orig_pos(pos), pos(pos), old_pos(pos),acceleration(Vec3(0,0,0)), mass(1), movable(true), accumulated_normal(Vec3(0,0,0)), gone(false){
+	bool disconnected[4] = {false,false,false,false};
+}
 
 void Particle::addForce(Vec3 f) {
 	acceleration += f/mass;
@@ -49,3 +52,48 @@ void Particle::resetNormal() {
 	accumulated_normal = Vec3(0,0,0);
 }
 
+bool Particle::getDisconnectedLeft(){
+	return disconnected[0];
+}
+
+bool Particle::getDisconnectedRight(){
+	//std::cout << "checking right: "<<disconnected[1];
+	return disconnected[1];
+}
+
+bool Particle::getDisconnectedBottom(){
+	//std::cout << "checking bottom: "<<disconnected[2];
+	return disconnected[2];
+}
+
+bool Particle::getDisconnectedTop(){
+	return disconnected[3];
+}
+
+void Particle::setDisconnectedLeft(){
+	disconnected[0] = true;
+}
+
+void Particle::setDisconnectedRight(){
+	disconnected[1] = true;
+}
+
+void Particle::setDisconnectedBottom(){
+	disconnected[2] = true;
+}
+
+void Particle::setDisconnectedTop(){
+	disconnected[3] = true;
+}
+
+bool Particle::getGone(){
+	return gone;
+}
+
+void Particle::setGone(){
+	gone = true;
+}
+
+Vec3 Particle::getOrigPos(){
+	return orig_pos;
+}

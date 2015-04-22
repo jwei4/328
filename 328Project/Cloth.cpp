@@ -153,14 +153,23 @@ void Cloth::drawWire(){
 	for(int x = 0; x < num_particles_width; x++) {
 		for(int y=0; y < num_particles_height; y++) {
 			if(x == num_particles_width-1 && y < num_particles_height-1){
-				drawLine(getParticle(x,y), getParticle(x, y+1));
+				//std::cout << "x,y GDR: " << getParticle(x,y)->getDisconnectedRight()<<" x,y+1 GDT: " << getParticle(x,y+1)->getDisconnectedTop();
+				//if(getParticle(x,y)->getDisconnectedRight() && getParticle(x,y+1)->getDisconnectedTop())
+				if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
+					drawLine(getParticle(x,y), getParticle(x, y+1));
 			}
 			if(y == num_particles_height-1 && x < num_particles_width-1){
-				drawLine(getParticle(x,y), getParticle(x+1, y));
+				//if(getParticle(x,y)->getDisconnectedBottom() && getParticle(x+1, y)->getDisconnectedLeft())
+				if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
+					drawLine(getParticle(x,y), getParticle(x+1, y));
 			}
 			if(x < num_particles_width-1 && y < num_particles_height-1){
-				drawLine(getParticle(x,y), getParticle(x, y+1));
-				drawLine(getParticle(x,y), getParticle(x+1, y));
+				//if(getParticle(x,y)->getDisconnectedRight() && getParticle(x,y+1)->getDisconnectedTop())
+				if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
+					drawLine(getParticle(x,y), getParticle(x, y+1));
+				//if(getParticle(x,y)->getDisconnectedBottom() && getParticle(x+1, y)->getDisconnectedLeft())
+				if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
+					drawLine(getParticle(x,y), getParticle(x+1, y));
 			//	drawLine(getParticle(x,y), getParticle(x+1, y+1));
 			}
 	/*		if(x > 0 && y < num_particles_height-1){
@@ -243,10 +252,21 @@ void Cloth::addForce(const Vec3 direction){
 void Cloth::ballCollision(const Vec3 center, const float radius){
 	std::vector<Particle>::iterator particle;
 	for(particle = particles.begin(); particle != particles.end(); particle++){
-		Vec3 v = (*particle).getPos()-center;
-		float l = v.length();
-		if(v.length() < radius){
-			(*particle).offsetPos(v.normalized()*(radius-1));
+		if(!(*particle).getGone()){
+			//std::cout<<"YOOO: " << !(*particle).getGone();
+			Vec3 v = (*particle).getPos()-center;
+			float l = v.length();
+			if(v.length() < radius){
+				(*particle).offsetPos(v.normalized()*(radius-1));
+					std::cout << "distance:  " << (*particle).getPos().distance((*particle).getOrigPos());
+				if((*particle).getPos().distance((*particle).getOrigPos()) > THETA_DIST){
+					(*particle).setGone();
+					(*particle).setDisconnectedBottom();
+					(*particle).setDisconnectedTop();
+					(*particle).setDisconnectedLeft();
+					(*particle).setDisconnectedRight();
+				}
+			}
 		}
 	}
 }

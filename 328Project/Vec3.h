@@ -17,6 +17,7 @@ public:
 	Vec3 operator-();
 	Vec3 cross(const Vec3 &v);
 	float dot(const Vec3 &v);
+	float distance(const Vec3 &v);
 };
 
 #endif

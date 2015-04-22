@@ -14,7 +14,7 @@ using namespace std;
 static float mouse_x(0.0), mouse_y(0.0);
 static float rotation_x(0.0),rotation_y(0.0);
 static int win_width(1280), win_height(700);
-static float arealDensity  = 0.25, k_struct = 6000, k_bend = 5.0, k_shear = 2.0, theta_dist = 0.02;
+static float arealDensity  = 0.25, k_struct = 6000, k_bend = 5.0, k_shear = 2.0;
 float yarnPerUnitLength = 10;		//10-15 cm
 float tearingThreshold = 5;			//5-10% 
 float modelTransThreshold = 4.5;	//4.5-9%

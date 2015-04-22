@@ -4,7 +4,8 @@
 #define DAMPING 0.01				// Damping for particle
 #define TIME_STEPSIZE2 0.5*0.5		// timestep for particle
 #define CONSTRAINT_ITERATIONS 15    // iterations of constraint satisfaction each frame
-#define THICKNESS .5
+#define THICKNESS .5				// how far each particle is seperated
+#define THETA_DIST 2				// distance at which particles disconnect
 
 class Project {
 	void drawThings();
