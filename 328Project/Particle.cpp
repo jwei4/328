@@ -5,8 +5,9 @@
 
 
 
-Particle::Particle(Vec3 pos) : orig_pos(pos), pos(pos), old_pos(pos),acceleration(Vec3(0,0,0)), mass(1), movable(true), accumulated_normal(Vec3(0,0,0)), gone(false){
-	bool disconnected[4] = {false,false,false,false};
+Particle::Particle(Vec3 pos) : orig_pos(pos), pos(pos), old_pos(pos),acceleration(Vec3(0,0,0)), mass(1), 
+	movable(true), accumulated_normal(Vec3(0,0,0)), gone(false), top(-1), left(-1), right(-1), bottom(-1){
+	 memset(disconnected, false, sizeof(bool)*4);
 }
 
 void Particle::addForce(Vec3 f) {
@@ -57,12 +58,10 @@ bool Particle::getDisconnectedLeft(){
 }
 
 bool Particle::getDisconnectedRight(){
-	//std::cout << "checking right: "<<disconnected[1];
 	return disconnected[1];
 }
 
 bool Particle::getDisconnectedBottom(){
-	//std::cout << "checking bottom: "<<disconnected[2];
 	return disconnected[2];
 }
 

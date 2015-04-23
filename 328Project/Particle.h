@@ -4,6 +4,10 @@ private:
 	bool movable; // make parts of cloth not movable
 	bool disconnected[4];
 	bool gone;
+	int top;
+	int left;
+	int right;
+	int bottom;
 	float mass; 
 	Vec3 orig_pos;
 	Vec3 pos; // current position 

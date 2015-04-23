@@ -55,8 +55,6 @@ void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 co
 }
 
 Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), num_particles_height(height/THICKNESS){
-	/*int num_particles_width = width/THICKNESS;
-	int num_particles_height = height/THICKNESS;*/
 	std::cout << "width: " << num_particles_width << " height: " << num_particles_height;
 	particles.resize(num_particles_width*num_particles_height); //set particle vector size to size of cloth
 
@@ -89,17 +87,16 @@ Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), 
 	}
 
 	// set part of cloth unmovable (top left and right)
-	for(int i=0;i<num_particles_width; i++)
+	//for(int i=0;i<num_particles_width; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		//top row
 		getParticle(0+i ,0)->makeUnmovable(); 
-		//getParticle(num_particles_width-1-i ,0)->makeUnmovable();
+		getParticle(num_particles_width-1-i ,0)->makeUnmovable();
 		//getParticle(0+i, num_particles_height-1)->makeUnmovable();
 		//getParticle(num_particles_width-1-i, num_particles_height-1)->makeUnmovable();
 	}
 }
-
-
 
 Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : num_particles_width(num_particles_width), num_particles_height(num_particles_height){
 	particles.resize(num_particles_width*num_particles_height); //set particle vector size to size of cloth
@@ -148,27 +145,27 @@ void Cloth::drawWire(){
 	for(particle = particles.begin(); particle != particles.end(); particle++) {
 		(*particle).resetNormal();
 	}
-
+	//use vectors with particles that keep track of neighbors, knn algorithm
 	glBegin(GL_LINES);
 	for(int x = 0; x < num_particles_width; x++) {
 		for(int y=0; y < num_particles_height; y++) {
 			if(x == num_particles_width-1 && y < num_particles_height-1){
 				//std::cout << "x,y GDR: " << getParticle(x,y)->getDisconnectedRight()<<" x,y+1 GDT: " << getParticle(x,y+1)->getDisconnectedTop();
-				//if(getParticle(x,y)->getDisconnectedRight() && getParticle(x,y+1)->getDisconnectedTop())
-				if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
+				if(!getParticle(x,y)->getDisconnectedRight() && !getParticle(x,y+1)->getDisconnectedTop())
+				//if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
 					drawLine(getParticle(x,y), getParticle(x, y+1));
 			}
 			if(y == num_particles_height-1 && x < num_particles_width-1){
-				//if(getParticle(x,y)->getDisconnectedBottom() && getParticle(x+1, y)->getDisconnectedLeft())
-				if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
+				if(!getParticle(x,y)->getDisconnectedBottom() && !getParticle(x+1, y)->getDisconnectedLeft())
+				//if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
 					drawLine(getParticle(x,y), getParticle(x+1, y));
 			}
 			if(x < num_particles_width-1 && y < num_particles_height-1){
-				//if(getParticle(x,y)->getDisconnectedRight() && getParticle(x,y+1)->getDisconnectedTop())
-				if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
+				if(!getParticle(x,y)->getDisconnectedRight() && !getParticle(x,y+1)->getDisconnectedTop())
+				//if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
 					drawLine(getParticle(x,y), getParticle(x, y+1));
-				//if(getParticle(x,y)->getDisconnectedBottom() && getParticle(x+1, y)->getDisconnectedLeft())
-				if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
+				if(!getParticle(x,y)->getDisconnectedBottom() && !getParticle(x+1, y)->getDisconnectedLeft())
+				//if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
 					drawLine(getParticle(x,y), getParticle(x+1, y));
 			//	drawLine(getParticle(x,y), getParticle(x+1, y+1));
 			}
@@ -258,7 +255,7 @@ void Cloth::ballCollision(const Vec3 center, const float radius){
 			float l = v.length();
 			if(v.length() < radius){
 				(*particle).offsetPos(v.normalized()*(radius-1));
-					std::cout << "distance:  " << (*particle).getPos().distance((*particle).getOrigPos());
+					//std::cout << "distance:  " << (*particle).getPos().distance((*particle).getOrigPos());
 				if((*particle).getPos().distance((*particle).getOrigPos()) > THETA_DIST){
 					(*particle).setGone();
 					(*particle).setDisconnectedBottom();
