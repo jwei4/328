@@ -56,6 +56,6 @@ float Vec3::dot(const Vec3 &v) {
 }
 
 float Vec3::distance(const Vec3 &v){
-	std::cout << sqrt( pow((v.f[0]-f[0]), 2) + pow((v.f[1]-f[1]), 2) + pow((v.f[2]-f[2]), 2)) << "\n";
+	//std::cout << sqrt( pow((v.f[0]-f[0]), 2) + pow((v.f[1]-f[1]), 2) + pow((v.f[2]-f[2]), 2)) << "\n";
 	return sqrt( pow((v.f[0]-f[0]), 2) + pow((v.f[1]-f[1]), 2) + pow((v.f[2]-f[2]), 2));
 }

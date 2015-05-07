@@ -7,8 +7,9 @@ class Particle {
 private:
 	bool movable; // make parts of cloth not movable
 	bool gone;
-	bool warp; //up-down
-	bool weft; //left-right
+	int warp; //up-down
+	int weft; //left-right
+	bool noConstraints;
 	int top;
 	int left;
 	int right;
@@ -34,10 +35,10 @@ public:
 	void resetNormal();
 	int getWarp();
 	int getWeft();
-	int setWarpHigh();
-	int setWeftHigh();
-	int setWarpLow();
-	int setWeftLow();
+	void setWarpHigh();
+	void setWeftHigh();
+	void setWarpLow();
+	void setWeftLow();
 	void setDisconnectedTop();
 	bool getGone();
 	void setGone();
@@ -50,6 +51,7 @@ public:
 	int getBottom();
 	int getLeft();
 	int getRight();
-
+	void setNoConstraints();
+	bool getNoConstraints();
 };
 

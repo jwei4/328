@@ -10,6 +10,8 @@ private:
 	int num_particles_width;				// num of particles in cloth width
 	int num_particles_height;				// num of particles in cloth height
 
+	int neightbor;
+
 	std::vector<Particle> particles;		// vector of particles in cloth
 	std::vector<Constraints> constraints;	// vecotr of constraints between particles in cloth
 
@@ -32,8 +34,11 @@ public:
 	void drawWire();
 	void drawShaded();
 	void timeStep();
+	Vec3 calcClothNormal(Particle* p);
 	void addForce(const Vec3 direction);
-	void checkDistance(Particle* p);
+	void transitionModel(Particle* p);
+	void checkTearDistance(Particle* p);
+	void checkRipDistance(Particle* p);
 	void ballCollision(const Vec3 center, const float radius);
 };
 

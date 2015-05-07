@@ -4,7 +4,7 @@
 #include <iostream>
 
 Particle::Particle(Vec3 pos) : orig_pos(pos), pos(pos), old_pos(pos),acceleration(Vec3(0,0,0)), mass(1), 
-	movable(true), accumulated_normal(Vec3(0,0,0)), gone(false), top(-1), left(-1), right(-1), bottom(-1), warp(0), weft(0){
+	movable(true), accumulated_normal(Vec3(0,0,0)), gone(false), top(-1), left(-1), right(-1), bottom(-1), warp(0), weft(0), noConstraints(false){
 }
 
 void Particle::addForce(Vec3 f) {
@@ -58,19 +58,19 @@ int Particle::getWeft(){
 	return weft;
 }
 
-int Particle::setWarpHigh(){
+void Particle::setWarpHigh(){
 	warp = 2;
 }
 
-int Particle::setWeftHigh(){
+void Particle::setWeftHigh(){
 	weft = 2;
 }
 
-int Particle::setWarpLow(){
+void Particle::setWarpLow(){
 	weft = 1;
 }
 
-int Particle::setWeftLow(){
+void Particle::setWeftLow(){
 	weft = 1;
 }
 
@@ -80,6 +80,7 @@ bool Particle::getGone(){
 
 void Particle::setGone(){
 	gone = true;
+	noConstraints = true;
 }
 
 Vec3 Particle::getOrigPos(){
@@ -116,4 +117,12 @@ int Particle::getLeft(){
 
 int Particle::getRight(){
 	return right;
+}
+
+void Particle::setNoConstraints(){
+	noConstraints = true;
+}
+
+bool Particle::getNoConstraints(){
+	return noConstraints;
 }
