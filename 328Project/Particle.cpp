@@ -3,11 +3,8 @@
 #include "Particle.h"
 #include <iostream>
 
-
-
 Particle::Particle(Vec3 pos) : orig_pos(pos), pos(pos), old_pos(pos),acceleration(Vec3(0,0,0)), mass(1), 
-	movable(true), accumulated_normal(Vec3(0,0,0)), gone(false), top(-1), left(-1), right(-1), bottom(-1){
-	 memset(disconnected, false, sizeof(bool)*4);
+	movable(true), accumulated_normal(Vec3(0,0,0)), gone(false), top(-1), left(-1), right(-1), bottom(-1), warp(0), weft(0){
 }
 
 void Particle::addForce(Vec3 f) {
@@ -53,36 +50,28 @@ void Particle::resetNormal() {
 	accumulated_normal = Vec3(0,0,0);
 }
 
-bool Particle::getDisconnectedLeft(){
-	return disconnected[0];
+int Particle::getWarp(){
+	return warp;
 }
 
-bool Particle::getDisconnectedRight(){
-	return disconnected[1];
+int Particle::getWeft(){
+	return weft;
 }
 
-bool Particle::getDisconnectedBottom(){
-	return disconnected[2];
+int Particle::setWarpHigh(){
+	warp = 2;
 }
 
-bool Particle::getDisconnectedTop(){
-	return disconnected[3];
+int Particle::setWeftHigh(){
+	weft = 2;
 }
 
-void Particle::setDisconnectedLeft(){
-	disconnected[0] = true;
+int Particle::setWarpLow(){
+	weft = 1;
 }
 
-void Particle::setDisconnectedRight(){
-	disconnected[1] = true;
-}
-
-void Particle::setDisconnectedBottom(){
-	disconnected[2] = true;
-}
-
-void Particle::setDisconnectedTop(){
-	disconnected[3] = true;
+int Particle::setWeftLow(){
+	weft = 1;
 }
 
 bool Particle::getGone(){
@@ -95,4 +84,36 @@ void Particle::setGone(){
 
 Vec3 Particle::getOrigPos(){
 	return orig_pos;
+}
+
+void Particle::setLeft(int index){
+	left = index;
+}
+
+void Particle::setRight(int index){
+	right = index;
+}
+
+void Particle::setTop(int index){
+	top = index;
+}
+
+void Particle::setBottom(int index){
+	bottom = index;
+}
+
+int Particle::getTop(){
+	return top;
+}
+
+int Particle::getBottom(){
+	return bottom;
+}
+
+int Particle::getLeft(){
+	return left;
+}
+
+int Particle::getRight(){
+	return right;
 }

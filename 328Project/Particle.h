@@ -1,9 +1,14 @@
 #pragma once
+
+#include <vector>
+using std::vector;
+
 class Particle {
 private:
 	bool movable; // make parts of cloth not movable
-	bool disconnected[4];
 	bool gone;
+	bool warp; //up-down
+	bool weft; //left-right
 	int top;
 	int left;
 	int right;
@@ -27,16 +32,24 @@ public:
 	void addToNormal(Vec3 normal);
 	Vec3& getNormal();
 	void resetNormal();
-	bool getDisconnectedLeft();
-	bool getDisconnectedRight();
-	bool getDisconnectedBottom();
-	bool getDisconnectedTop();
-	void setDisconnectedLeft();
-	void setDisconnectedRight();
-	void setDisconnectedBottom();
+	int getWarp();
+	int getWeft();
+	int setWarpHigh();
+	int setWeftHigh();
+	int setWarpLow();
+	int setWeftLow();
 	void setDisconnectedTop();
 	bool getGone();
 	void setGone();
 	Vec3 getOrigPos();
+	void setTop(int index);
+	void setBottom(int index);
+	void setLeft(int index);
+	void setRight(int index);
+	int getTop();
+	int getBottom();
+	int getLeft();
+	int getRight();
+
 };
 

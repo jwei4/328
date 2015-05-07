@@ -1,5 +1,5 @@
-#ifndef Cloth_H
-#define Cloth_H
+#ifndef _Cloth_H
+#define _Cloth_H
 
 #include "Particle.h"
 #include "Constraints.h"
@@ -14,6 +14,11 @@ private:
 	std::vector<Constraints> constraints;	// vecotr of constraints between particles in cloth
 
 	Particle* getParticle(int x, int y);
+	Particle* getTopP(int x, int y);
+	Particle* getBotP(int x, int y);
+	Particle* getLeftP(int x, int y);
+	Particle* getRightP(int x, int y);
+	int getVecIndex(int x, int y, int z);
 	void makeConstraint(Particle *p1, Particle *p2);
 	Vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
 	void drawLine(Particle *p1, Particle *p2);
@@ -28,6 +33,7 @@ public:
 	void drawShaded();
 	void timeStep();
 	void addForce(const Vec3 direction);
+	void checkDistance(Particle* p);
 	void ballCollision(const Vec3 center, const float radius);
 };
 

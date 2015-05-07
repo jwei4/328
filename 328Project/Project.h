@@ -5,7 +5,8 @@
 #define TIME_STEPSIZE2 0.5*0.5		// timestep for particle
 #define CONSTRAINT_ITERATIONS 15    // iterations of constraint satisfaction each frame
 #define THICKNESS .5				// how far each particle is seperated
-#define THETA_DIST 2				// distance at which particles disconnect
+#define THETA_DIST 4				// distance at which particles disconnect
+#define TEAR_THRESH 2				// distance at which particles start to tear
 
 class Project {
 	void drawThings();

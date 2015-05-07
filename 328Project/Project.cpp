@@ -22,8 +22,9 @@ float N_proj = 30;					//30-50
 
 int dragging = 1;
 
-Cloth cloth1(15, 15); // one Cloth object of the Cloth class
+Cloth cloth1(35, 15); // one Cloth object of the Cloth class
 Vec3 ball_pos(7,-5,0);
+//Vec3 ball_pos2(14,-5,0);
 float ball_radius = 3;
 float ball_time = 0;
 
@@ -110,10 +111,12 @@ void winReshapeFcn (int w, int h) {
 void display(void) {
 	ball_time++;
 	ball_pos.f[2] = cos(ball_time/100.0)*7;
+	//ball_pos2.f[2] = cos(ball_time/100.0)*7;
 
 	cloth1.addForce(Vec3(0,-0.2,0)*TIME_STEPSIZE2);
 	cloth1.timeStep();
 	cloth1.ballCollision(ball_pos, ball_radius);
+	//cloth1.ballCollision(ball_pos2, ball_radius);
 
 	//clean the scene
     glClearColor(0.3,0.3,0.3,1.0); //set background
@@ -136,6 +139,10 @@ void display(void) {
 	glTranslatef(ball_pos.f[0], ball_pos.f[1], ball_pos.f[2]);
 	glColor3f(0.4f, 0.8f, 0.5f);
 	glutSolidSphere(ball_radius-0.1,50,50);
+	/*
+	glTranslatef(ball_pos2.f[0], ball_pos2.f[1], ball_pos2.f[2]);
+	glColor3f(0.4f, 0.8f, 0.5f);
+	glutSolidSphere(ball_radius-0.1,50,50);*/
 
 	glPopMatrix();
 

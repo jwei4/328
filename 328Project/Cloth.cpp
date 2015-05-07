@@ -7,9 +7,23 @@
 #include <GL/GL.h>
 #include <iostream>
 
-Particle* Cloth::getParticle(int x, int y) {return &particles[y*num_particles_width + x];}
+Particle* Cloth::getParticle(int x, int y) {return &particles[x*num_particles_height + y];}
+/*Particle* Cloth::getTopP(int x, int y) {return &particles[x*num_particles_height+y-1];}
+Particle* Cloth::getBotP(int x, int y) {return &particles[x*num_particles_height+y+1];}
+Particle* Cloth::getLeftP(int x, int y) {return &particles[x*num_particles_height+y-num_particles_height];}
+Particle* Cloth::getRightP(int x, int y) {return &particles[x*num_particles_height + y+num_particles_height];}*/
 void Cloth::makeConstraint(Particle *p1, Particle *p2) {constraints.push_back(Constraints(p1,p2));}
 
+int Cloth::getVecIndex(int x, int y, int z){
+	int i = 0;
+	std::vector<Particle>::iterator particle;
+	for(particle = particles.begin(); particle != particles.end(); particle++){
+		if((*particle).getPos().f[0] == x && (*particle).getPos().f[1] == y && (*particle).getPos().f[2] == z)
+			return i;
+		i++;
+	}
+	return -1;
+}
 
 Vec3 Cloth::calcLineNormal(Particle *p1,Particle *p2) {
 	Vec3 pos1 = p1->getPos();
@@ -56,13 +70,31 @@ void Cloth::drawTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 co
 
 Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), num_particles_height(height/THICKNESS){
 	std::cout << "width: " << num_particles_width << " height: " << num_particles_height;
-	particles.resize(num_particles_width*num_particles_height); //set particle vector size to size of cloth
 
 	// creating particles from (0,0,0) to (width,-height,0)
 	for(int x=0; x<num_particles_width; x++) {
 		for(int y=0; y<num_particles_height; y++) {
 			Vec3 pos = Vec3(width * (x/(float)num_particles_width),-height * (y/(float)num_particles_height),0);
-			particles[y*num_particles_width+x]= Particle(pos); // insert into particle vector
+			particles.push_back(Particle(pos)); // insert into particle vector
+
+			//set particle's neighbors --> redo this
+			if(getParticle(x,y)->getPos().f[0] == 0){
+				getParticle(x,y)->setLeft(-1);
+			}/*else if(getParticle(x,y)->getPos().f[0] == num_particles_width-1){
+			 getParticle(x,y)->setRight(-1);
+			 }*/else{
+				 getParticle(x,y)->setLeft(x*num_particles_height+y-num_particles_height);
+				 particles.at(x*num_particles_height+y-num_particles_height).setRight(x*num_particles_height + y+num_particles_height);
+			}
+
+			if(abs(getParticle(x,y)->getPos().f[1]) == 0){
+				getParticle(x,y)->setTop(-1);
+			}/*else if(getParticle(x,y)->getPos().f[1] == num_particles_height-1){
+			 getParticle(x,y)->setBottom(-1);
+			 }*/else{
+				 getParticle(x,y)->setTop(y-1);
+				 particles.at(y-1).setBottom(y);
+			}
 		}
 	}
 
@@ -98,80 +130,30 @@ Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), 
 	}
 }
 
-Cloth::Cloth(float width, float height, int num_particles_width, int num_particles_height) : num_particles_width(num_particles_width), num_particles_height(num_particles_height){
-	particles.resize(num_particles_width*num_particles_height); //set particle vector size to size of cloth
-
-	// creating particles from (0,0,0) to (width,-height,0)
-	for(int x=0; x<num_particles_width; x++) {
-		for(int y=0; y<num_particles_height; y++) {
-			Vec3 pos = Vec3(width * (x/(float)num_particles_width),-height * (y/(float)num_particles_height),0);
-			particles[y*num_particles_width+x]= Particle(pos); // insert into particle vector
-		}
-	}
-
-	// Connecting neighbor particles with constraints 
-	for(int x=0; x<num_particles_width; x++) {
-		for(int y=0; y<num_particles_height; y++) {
-			if (x<num_particles_width-1) makeConstraint(getParticle(x,y),getParticle(x+1,y));
-			if (y<num_particles_height-1) makeConstraint(getParticle(x,y),getParticle(x,y+1));
-			if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(getParticle(x,y),getParticle(x+1,y+1));
-			if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(getParticle(x+1,y),getParticle(x,y+1));
-		}
-	}
-
-	// Connecting secondary neighbors with constraints
-	for(int x=0; x<num_particles_width; x++) {
-		for(int y=0; y<num_particles_height; y++) {
-			if (x<num_particles_width-2) makeConstraint(getParticle(x,y),getParticle(x+2,y));
-			if (y<num_particles_height-2) makeConstraint(getParticle(x,y),getParticle(x,y+2));
-			if (x<num_particles_width-2 && y<num_particles_height-2) makeConstraint(getParticle(x,y),getParticle(x+2,y+2));
-			if (x<num_particles_width-2 && y<num_particles_height-2) makeConstraint(getParticle(x+2,y),getParticle(x,y+2));			
-		}
-	}
-
-	// set part of cloth unmovable (top left and right)
-	for(int i=0;i<num_particles_width; i++)
-	{
-		getParticle(0+i ,0)->makeUnmovable(); 
-		getParticle(num_particles_width-1-i ,0)->makeUnmovable();
-		getParticle(0+i, num_particles_height-1)->makeUnmovable();
-		getParticle(num_particles_width-1-i, num_particles_height-1)->makeUnmovable();
-	}
-}
-
 //draw Wire version
 void Cloth::drawWire(){
 	std::vector<Particle>::iterator particle;
 	for(particle = particles.begin(); particle != particles.end(); particle++) {
 		(*particle).resetNormal();
 	}
-	//use vectors with particles that keep track of neighbors, knn algorithm
+	//use vectors with particles that keep track of neighbors, (look into knn algorithm)
 	glBegin(GL_LINES);
 	for(int x = 0; x < num_particles_width; x++) {
 		for(int y=0; y < num_particles_height; y++) {
 			if(x == num_particles_width-1 && y < num_particles_height-1){
-				//std::cout << "x,y GDR: " << getParticle(x,y)->getDisconnectedRight()<<" x,y+1 GDT: " << getParticle(x,y+1)->getDisconnectedTop();
-				if(!getParticle(x,y)->getDisconnectedRight() && !getParticle(x,y+1)->getDisconnectedTop())
-				//if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
-					drawLine(getParticle(x,y), getParticle(x, y+1));
+					if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
+						drawLine(getParticle(x,y), getParticle(x, y+1));
 			}
 			if(y == num_particles_height-1 && x < num_particles_width-1){
-				if(!getParticle(x,y)->getDisconnectedBottom() && !getParticle(x+1, y)->getDisconnectedLeft())
-				//if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
-					drawLine(getParticle(x,y), getParticle(x+1, y));
+					if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
+						drawLine(getParticle(x,y), getParticle(x+1, y));
 			}
 			if(x < num_particles_width-1 && y < num_particles_height-1){
-				if(!getParticle(x,y)->getDisconnectedRight() && !getParticle(x,y+1)->getDisconnectedTop())
-				//if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
-					drawLine(getParticle(x,y), getParticle(x, y+1));
-				if(!getParticle(x,y)->getDisconnectedBottom() && !getParticle(x+1, y)->getDisconnectedLeft())
-				//if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
-					drawLine(getParticle(x,y), getParticle(x+1, y));
-			//	drawLine(getParticle(x,y), getParticle(x+1, y+1));
+					if(!getParticle(x,y)->getGone() && !getParticle(x,y+1)->getGone())
+						drawLine(getParticle(x,y), getParticle(x, y+1));
+					if(!getParticle(x,y)->getGone() && !getParticle(x+1, y)->getGone())
+						drawLine(getParticle(x,y), getParticle(x+1, y));
 			}
-	/*		if(x > 0 && y < num_particles_height-1){
-				drawLine(getParticle(x,y), getParticle(x-1, y+1));
-			}*/
 		}
 	}
 	glEnd();
@@ -196,7 +178,7 @@ void Cloth::drawShaded() {
 			getParticle(x+1,y)->addToNormal(normal);
 			getParticle(x,y+1)->addToNormal(normal);
 
-		/*	normal = calcTriangleNormal(getParticle(x,y+1),getParticle(x,y),getParticle(x+1,y+1));
+			/*	normal = calcTriangleNormal(getParticle(x,y+1),getParticle(x,y),getParticle(x+1,y+1));
 			getParticle(x,y+1)->addToNormal(normal);
 			getParticle(x,y)->addToNormal(normal);
 			getParticle(x+1,y+1)->addToNormal(normal);
@@ -214,9 +196,9 @@ void Cloth::drawShaded() {
 			Vec3 color(1,1,1);
 			drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x,y+1),color);
 			drawTriangle(getParticle(x+1,y+1),getParticle(x+1,y),getParticle(x,y+1),color);
-	/*		if(x > 0){
-				drawTriangle(getParticle(x,y+1),getParticle(x,y),getParticle(x+1,y+1),color);
-				drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x+1,y+1),color);
+			/*		if(x > 0){
+			drawTriangle(getParticle(x,y+1),getParticle(x,y),getParticle(x+1,y+1),color);
+			drawTriangle(getParticle(x+1,y),getParticle(x,y),getParticle(x+1,y+1),color);
 			}*/
 		}
 	}
@@ -246,23 +228,46 @@ void Cloth::addForce(const Vec3 direction){
 	}
 }
 
+void Cloth::checkDistance(Particle* p){
+	if((*p).getTop() != -1){
+		if((*p).getPos().distance((particles.at((*p).getTop()).getPos())) > THETA_DIST){
+			(*p).setGone();
+			particles.at((*p).getTop()).setBottom(-1);
+			(*p).setTop(-1);
+		}
+	}
+	if((*p).getBottom() != -1){
+		if((*p).getPos().distance((particles.at((*p).getBottom()).getPos())) > THETA_DIST){
+			(*p).setGone();
+			particles.at((*p).getBottom()).setTop(-1);
+			(*p).setBottom(-1);
+		}
+	}
+	if((*p).getLeft() != -1){
+		if((*p).getPos().distance((particles.at((*p).getLeft()).getPos())) > THETA_DIST){
+			(*p).setGone();
+			particles.at((*p).getLeft()).setRight(-1);
+			(*p).setLeft(-1);
+		}
+	}
+	if((*p).getRight() != -1){
+		if((*p).getPos().distance((particles.at((*p).getRight()).getPos())) > THETA_DIST){
+			(*p).setGone();
+			particles.at((*p).getRight()).setLeft(-1);
+			(*p).setRight(-1);
+		}
+	}
+}
+
 void Cloth::ballCollision(const Vec3 center, const float radius){
 	std::vector<Particle>::iterator particle;
 	for(particle = particles.begin(); particle != particles.end(); particle++){
 		if(!(*particle).getGone()){
-			//std::cout<<"YOOO: " << !(*particle).getGone();
 			Vec3 v = (*particle).getPos()-center;
 			float l = v.length();
 			if(v.length() < radius){
 				(*particle).offsetPos(v.normalized()*(radius-1));
-					//std::cout << "distance:  " << (*particle).getPos().distance((*particle).getOrigPos());
-				if((*particle).getPos().distance((*particle).getOrigPos()) > THETA_DIST){
-					(*particle).setGone();
-					(*particle).setDisconnectedBottom();
-					(*particle).setDisconnectedTop();
-					(*particle).setDisconnectedLeft();
-					(*particle).setDisconnectedRight();
-				}
+				checkDistance(&(*particle));
 			}
 		}
 	}
