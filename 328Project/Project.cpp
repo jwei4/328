@@ -23,9 +23,9 @@ float N_proj = 30;					//30-50
 int dragging = 1;
 
 Cloth cloth1(35, 15); // one Cloth object of the Cloth class
-Vec3 ball_pos(7,-7,0);
+Vec3 ball_pos(10,-7,0);
 //Vec3 ball_pos2(14,-5,0);
-float ball_radius = 3;
+float ball_radius = 2;
 float ball_time = 0;
 
 //Draw Stuff

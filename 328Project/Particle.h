@@ -53,5 +53,6 @@ public:
 	int getRight();
 	void setNoConstraints();
 	bool getNoConstraints();
+	bool getMovable();
 };
 

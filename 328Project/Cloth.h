@@ -22,17 +22,14 @@ private:
 	Particle* getRightP(int x, int y);
 	int getVecIndex(int x, int y, int z);
 	void makeConstraint(Particle *p1, Particle *p2);
-	Vec3 calcTriangleNormal(Particle *p1,Particle *p2,Particle *p3);
-	void drawLine(Particle *p1, Particle *p2);
+	void drawLine(int index1, int index2);
 	Vec3 calcLineNormal(Particle *p1,Particle *p2);
-	void drawTriangle(Particle *p1, Particle *p2, Particle *p3, const Vec3 color);
 public:
 	Cloth(){};
 	~Cloth(){};
 	Cloth(float width, float height);
 	Cloth(float width, float height, int num_particles_width, int num_particles_height);
 	void drawWire();
-	void drawShaded();
 	void timeStep();
 	Vec3 calcClothNormal(Particle* p);
 	void addForce(const Vec3 direction);

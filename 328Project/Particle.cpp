@@ -126,3 +126,7 @@ void Particle::setNoConstraints(){
 bool Particle::getNoConstraints(){
 	return noConstraints;
 }
+
+bool Particle::getMovable(){
+	return movable;
+}
