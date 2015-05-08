@@ -10,6 +10,7 @@ private:
 	int warp; //up-down
 	int weft; //left-right
 	bool noConstraints;
+	int index;
 	int top;
 	int left;
 	int right;
@@ -54,5 +55,7 @@ public:
 	void setNoConstraints();
 	bool getNoConstraints();
 	bool getMovable();
+	int getIndex();
+	void setIndex(int i);
 };
 

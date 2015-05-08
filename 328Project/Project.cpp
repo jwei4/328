@@ -21,9 +21,14 @@ float modelTransThreshold = 4.5;	//4.5-9%
 float N_proj = 30;					//30-50
 
 int dragging = 1;
+int ball = 1;
+int side = 0;
+int down = 0;
 
 Cloth cloth1(15, 15); // one Cloth object of the Cloth class
-Vec3 ball_pos(10,-7,0);
+Vec3 ball_pos(5,-7,5);
+Vec3 ball_posLeft(30,-7,0);
+Vec3 ball_posDown(5,4,0);
 //Vec3 ball_pos2(14,-5,0);
 float ball_radius = 2;
 float ball_time = 0;
@@ -81,6 +86,24 @@ void keyboard( unsigned char key, int x, int y ) {
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	glutPostRedisplay();	
 		}
+	if(key == 'd'){
+		//theta = 1.1
+		ball = 0;
+		side = 0;
+		down = 1;
+	}
+	if(key == 'b'){
+		//THETA_DIST = 1.5;
+		ball = 1;
+		side = 0;
+		down = 0;
+	}
+	if(key == 'l'){
+		//theta = 1.1
+		ball = 0;
+		side = 1;
+		down = 0;
+	}
 };
 
 //Window reshape function
@@ -110,13 +133,24 @@ void winReshapeFcn (int w, int h) {
 
 void display(void) {
 	ball_time++;
+	if(ball){
 	if(ball_pos.f[2] > -6.8)
 	ball_pos.f[2] = cos(ball_time/100.0)*7;
-	//ball_pos2.f[2] = cos(ball_time/100.0)*7;
+	}
+	if(down){
+	if(ball_posDown.f[1] > -20)
+		ball_posDown.f[1]-= 0.1;
+	}
+	if(side){
+		if(ball_posLeft.f[0] > -20)
+	ball_posLeft.f[0] -= 0.1;
+	}
 
 	cloth1.addForce(Vec3(0,-0.2,0)*TIME_STEPSIZE2);
 	cloth1.timeStep();
-	cloth1.ballCollision(ball_pos, ball_radius);
+	if(ball)cloth1.ballCollision2(ball_pos, ball_radius);
+	if(side)cloth1.ballCollision(ball_posLeft, ball_radius);
+	if(down)cloth1.ballCollision(ball_posDown, ball_radius);
 	//cloth1.ballCollision(ball_pos2, ball_radius);
 
 	//clean the scene
@@ -137,13 +171,21 @@ void display(void) {
 	glRotatef(30,-5,5, 1);
 	drawThings();
    
+	if(ball){
 	glTranslatef(ball_pos.f[0], ball_pos.f[1], ball_pos.f[2]);
 	glColor3f(0.4f, 0.8f, 0.5f);
 	glutSolidSphere(ball_radius-0.1,50,50);
-	/*
-	glTranslatef(ball_pos2.f[0], ball_pos2.f[1], ball_pos2.f[2]);
+	}
+	if(down){
+	glTranslatef(ball_posDown.f[0], ball_posDown.f[1], ball_posDown.f[2]);
 	glColor3f(0.4f, 0.8f, 0.5f);
-	glutSolidSphere(ball_radius-0.1,50,50);*/
+	glutSolidSphere(ball_radius-0.1,50,50);
+	}
+	if(side){
+	glTranslatef(ball_posLeft.f[0], ball_posLeft.f[1], ball_posLeft.f[2]);
+	glColor3f(0.4f, 0.8f, 0.5f);
+	glutSolidSphere(ball_radius-0.1,50,50);
+	}
 
 	glPopMatrix();
 

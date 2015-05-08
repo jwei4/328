@@ -1,6 +1,5 @@
 #include <math.h>
 #include "Vec3.h"
-#include <iostream>;
 
 Vec3::Vec3(float x, float y, float z){
 	f[0] =x;

@@ -66,7 +66,11 @@ Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), 
 	for(int x=0; x<num_particles_width; x++) {
 		for(int y=0; y<num_particles_height; y++) {
 			Vec3 pos = Vec3(width * (x/(float)num_particles_width),-height * (y/(float)num_particles_height),0);
-			particles.push_back(Particle(pos)); // insert into particle vector
+			Particle *TBA = new Particle(pos);
+			TBA->setIndex(particles.size());
+			particles.push_back(*TBA); // insert into particle vector
+		//	Particle* p = new Particle(particles.back());
+			//std::cout<<"index: " << particles.size()<< " x: " << (*p).getPos().f[0] << " y: " <<(*p).getPos().f[1] << " z: " <<(*p).getPos().f[2] << "\n";
 
 			//set particle's neighbors 
 			if((getParticle(x,y))->getPos().f[0] == 0){
@@ -95,7 +99,6 @@ Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), 
 		}
 	}
 	
-	std::cout<<"HIIII";
 	// Connecting neighbor particles with constraints 
 	for(int x=0; x<num_particles_width; x++) {
 		for(int y=0; y<num_particles_height; y++) {
@@ -117,17 +120,17 @@ Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), 
 	}
 
 	// set part of cloth unmovable (top left and right)
-	//for(int i=0;i<num_particles_width; i++)
-	for(int i = 0; i < num_particles_height; i++)
+	for(int i=0;i<3; i++)
+	//for(int i = 0; i < num_particles_height; i++)
 	{
 		//top row
-		/*getParticle(0+i ,0)->makeUnmovable(); 
+		getParticle(0+i ,0)->makeUnmovable(); 
 		getParticle(num_particles_width-1-i ,0)->makeUnmovable();
 		getParticle(0+i, num_particles_height-1)->makeUnmovable();
-		getParticle(num_particles_width-1-i, num_particles_height-1)->makeUnmovable();*/
+		getParticle(num_particles_width-1-i, num_particles_height-1)->makeUnmovable();
 
-		getParticle(0, 0+i)->makeUnmovable();
-		getParticle(num_particles_width-1, 0+i)->makeUnmovable();
+		//getParticle(0, 0+i)->makeUnmovable();
+		//getParticle(num_particles_width-1, 0+i)->makeUnmovable();
 	}
 }
 
@@ -182,26 +185,28 @@ void Cloth::addForce(const Vec3 direction){
 	}
 }
 
-void Cloth::transitionModel(Particle* p){
-	/*if((*p).getTop() == -1 || (*p).getRight() == -1 || (*p).getLeft() == -1 || (*p).getBottom() == -1){
-		if((*p).getWarp() == 0 && (*p).getWeft() == 0){
-			Vec3 warp = (*p).getPos() + (Vec3(1,1,1)*(THICKNESS/2));
-			Vec3 weft = (*p).getPos() - (Vec3(1,1,1)*(THICKNESS/2));
+void Cloth::transitionModel(Particle &p){
+	int top = p.getTop();
+	int bottom = p.getBottom();
+/*	if(p.getTop() == -1 || p.getRight() == -1 || p.getLeft() == -1 || p.getBottom() == -1){
+		if(p.getWarp() == 0 && p.getWeft() == 0){
+			Vec3 warp = p.getPos() + (Vec3(1,1,1)*(THICKNESS/2));
+			Vec3 weft = p.getPos() - (Vec3(1,1,1)*(THICKNESS/2));
 			//std::cout << "warp: " << warp.f[0] << warp.f[1] << warp.f[2] << " weft: "<< weft.f[0] << weft.f[1] << weft.f[2] << "\n";
 
-			(*p).setGone();
+			p.setGone();
 			particles.push_back(Particle(warp));
-			if((*p).getTop() == -1){(particles.at(particles.size()-1)).setTop(-1);}
+			if(p.getTop() == -1){(particles.at(particles.size()-1)).setTop(-1);}
 			else{
-				(particles.at((*p).getTop())).setBottom(particles.size()-1);
-				(particles.at(particles.size()-1)).setTop((*p).getTop());
+				(particles.at(p.getTop())).setBottom(particles.size()-1);
+				(particles.at(particles.size()-1)).setTop(p.getTop());
 
 				makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getTop()));
 			}
-			if((*p).getBottom() == -1){(particles.at(particles.size()-1)).setBottom(-1);}
+			if(p.getBottom() == -1){(particles.at(particles.size()-1)).setBottom(-1);}
 			else{
-				(particles.at((*p).getBottom())).setTop(particles.size()-1);
-				(particles.at((particles.size()-1))).setBottom((*p).getBottom());
+				(particles.at(p.getBottom())).setTop(particles.size()-1);
+				(particles.at((particles.size()-1))).setBottom(p.getBottom());
 				makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getBottom()));
 			}
 			(particles.at(particles.size()-1)).setLeft(-1);
@@ -212,76 +217,92 @@ void Cloth::transitionModel(Particle* p){
 
 
 			particles.push_back(Particle(weft));
-			if((*p).getRight() == -1){(particles.at(particles.size()-1)).setRight(-1);}
+			if(p.getRight() == -1){(particles.at(particles.size()-1)).setRight(-1);}
 			else{
-				(particles.at((*p).getRight())).setLeft(particles.size()-1);
-				(particles.at((particles.size()-1))).setRight((*p).getRight());
+				(particles.at(p.getRight())).setLeft(particles.size()-1);
+				(particles.at((particles.size()-1))).setRight(p.getRight());
 				makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getRight()));
 			}
-			if((*p).getLeft() == -1){(particles.at(particles.size()-1)).setLeft(-1);}
+			if(p.getLeft() == -1){(particles.at(particles.size()-1)).setLeft(-1);}
 			else{
-				(particles.at((*p).getLeft())).setRight(particles.size()-1);
-				(particles.at((particles.size()-1))).setLeft((*p).getLeft());
+				(particles.at(p.getLeft())).setRight(particles.size()-1);
+				(particles.at((particles.size()-1))).setLeft(p.getLeft());
 				makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getLeft()));
 			}
 			(particles.at(particles.size()-1)).setTop(-1);
 			(particles.at(particles.size()-1)).setBottom(-1);
 			(particles.at(particles.size()-1)).setWeftHigh();
 
-
+/*
 			if(neighbor == 0){
 				neighbor = 1;
-				if(!((*p).getTop() == -1))
-					transitionModel(&(particles.at((*p).getTop())));
-				if(!((*p).getBottom() == -1))
-					transitionModel(&(particles.at((*p).getBottom())));
-				if(!((*p).getLeft() == -1))
-					transitionModel(&(particles.at((*p).getLeft())));
-				if(!((*p).getRight() == -1))
-					transitionModel(&(particles.at((*p).getRight())));
+				if(!(p.getTop() == -1))
+					transitionModel(&(particles.at(p.getTop())));
+				if(!(p.getBottom() == -1))
+					transitionModel(&(particles.at(p.getBottom())));
+				if(!(p.getLeft() == -1))
+					transitionModel(&(particles.at(p.getLeft())));
+				if(!(p.getRight() == -1))
+					transitionModel(&(particles.at(p.getRight())));
 			}
 		}
-	}*/
+	}
+	
 
-	 if((*p).getWarp() == 0 && (*p).getWeft() == 0 && (*p).getTop() > -1 && (*p).getRight() > -1 && (*p).getLeft() > -1 && (*p).getBottom() > -1 && (*p).getMovable() && !(*p).getGone()){
-		Vec3 clothNormal = calcClothNormal(&(*p));
-		Vec3 warp = (*p).getPos() + (clothNormal*(THICKNESS/2));
-		Vec3 weft = (*p).getPos() - (clothNormal*(THICKNESS/2));
-		(*p).setGone();
-		Particle *TBA = new Particle(warp);
-		TBA->setTop((*p).getTop());
-		TBA->setBottom((*p).getBottom());
+	else*/ if(p.getWarp() == 0 && p.getWeft() == 0 && p.getTop() > -1 && p.getRight() > -1 && p.getLeft() > -1 && p.getBottom() > -1 && p.getMovable() && !p.getGone()){
+		Vec3 *clothNormal = new Vec3(calcClothNormal(&p));
+		Vec3 *warp = new Vec3(p.getPos() + (*clothNormal*(THICKNESS/2)));
+		Vec3 *weft = new Vec3(p.getPos() - (*clothNormal*(THICKNESS/2)));
+		std::cout<<" WARP: "<< warp->f[0] << " " << warp->f[1] << " "<< warp->f[2] << "\n";
+		std::cout<<" WEFT: "<< weft->f[0] << " " << weft->f[1] << " "<< weft->f[2] << "\n";
+		p.setGone();
+		Particle *TBA = new Particle(*warp);
+		TBA->setTop(p.getTop());
+		TBA->setBottom(p.getBottom());
 		TBA->setLeft(-1);
 		TBA->setRight(-1);
 		TBA->setWarpHigh();
+		TBA->setIndex(particles.size());
 		particles.push_back(*TBA);
-		std::cout << (*p).getTop() << "  " << (*p).getWeft() << " " << (*p).getWarp() << " \n";
-		particles.at((*p).getTop()).setBottom(particles.size()-1);
-		particles.at((*p).getBottom()).setTop(particles.size()-1);
+		int size = (particles.size())-1;
+
+		std::cout<<"index: " << particles.size()<< " x: " << particles.back().getPos().f[0] << " y: " << particles.back().getPos().f[1]  << " z: " << particles.back().getPos().f[2] << "\n";
+		std::cout<< " INDEX: "<<p.getIndex() << "\n";
+		//std::cout << "TOP: "<<p.getTop() << "  " << p.getWeft() << " " << p.getWarp();
+		particles.at(p.getTop()).setBottom(size);
+		particles.at(p.getBottom()).setTop(size);
 
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getTop()));
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getBottom()));
 
-		Particle *TBAA = new Particle(weft);
-		TBAA->setLeft((*p).getLeft());
-		TBAA->setRight((*p).getRight());
+		Particle *TBAA = new Particle(*weft);
+		TBAA->setLeft(p.getLeft());
+		TBAA->setRight(p.getRight());
 		TBAA->setTop(-1);
 		TBAA->setBottom(-1);
-		TBA->setWeftHigh();
+		TBAA->setWeftHigh();
+		TBAA->setIndex(particles.size());
 		particles.push_back(*TBAA);
-
-		particles.at((*p).getLeft()).setRight(particles.size()-1);
-		particles.at((*p).getRight()).setLeft(particles.size()-1);
+		size = (particles.size())-1;
+		
+		std::cout<<"index: " << particles.size()<< " x: " << particles.back().getPos().f[0] << " y: " << particles.back().getPos().f[1] << " z: " << particles.back().getPos().f[2] << "\n";
+		
+		particles.at(p.getLeft()).setRight(size);
+		particles.at(p.getRight()).setLeft(size);
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getLeft()));
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getRight()));
 
-		if(neighbor == 0){
+	/*	if(neighbor == 0){
 			neighbor = 1;
-			transitionModel(&(particles.at((*p).getTop())));
-			transitionModel(&(particles.at((*p).getBottom())));
-			transitionModel(&(particles.at((*p).getLeft())));
-			transitionModel(&(particles.at((*p).getRight())));
-		}
+			if(p.getTop() != -1 && particles.at(p.getTop()).getWarp() == 0 && particles.at(p.getTop()).getWeft() == 0)
+			transitionModel((particles.at(p.getTop())));
+			if(p.getBottom() != -1 && particles.at(p.getBottom()).getWarp() == 0 && particles.at(p.getBottom()).getWeft() == 0)
+			transitionModel((particles.at(p.getBottom())));
+			if(p.getLeft() != -1 && particles.at(p.getLeft()).getWarp() == 0 && particles.at(p.getLeft()).getWeft() == 0)
+			transitionModel((particles.at(p.getLeft())));
+			if(p.getRight() != -1 && particles.at(p.getRight()).getWarp() == 0 && particles.at(p.getRight()).getWeft() == 0)
+			transitionModel((particles.at(p.getRight())));
+		}*/
 	}
 }
 
@@ -289,35 +310,143 @@ void Cloth::checkTearDistance(Particle* p){
 	neighbor = 0;
 	if((*p).getTop() != -1){
 		if((*p).getPos().distance((particles.at((*p).getTop()).getPos())) > TEAR_THRESH){
-			transitionModel(&(*p));
-			transitionModel(&particles.at((*p).getTop()));
+			transitionModel((*p));
+			//transitionModel(particles.at((*p).getTop()));
 		}
 	}
 
 	if((*p).getBottom() != -1){
 		if((*p).getPos().distance((particles.at((*p).getBottom()).getPos())) > TEAR_THRESH){
-			transitionModel(&(*p));
-			transitionModel(&particles.at((*p).getBottom()));
+			transitionModel((*p));
+		//	transitionModel(particles.at((*p).getBottom()));
 		}
 	}
 
 	if((*p).getRight() != -1){
 		if((*p).getPos().distance((particles.at((*p).getRight()).getPos())) > TEAR_THRESH){
-			transitionModel(&(*p));
-			transitionModel(&particles.at((*p).getRight()));
+			transitionModel((*p));
+		//	transitionModel(particles.at((*p).getRight()));
 		}
 	}
 	if((*p).getLeft() != -1){
 		if((*p).getPos().distance((particles.at((*p).getLeft()).getPos())) > TEAR_THRESH){
-			transitionModel(&(*p));
-			transitionModel(&particles.at((*p).getLeft()));
+			transitionModel((*p));
+			//transitionModel(particles.at((*p).getLeft()));
 		}
 	}
 }
 
+
+/*
+void Cloth::checkTearDistance(Particle* p){
+	neighbor = 0;
+	if((*p).getTop() != -1){
+		if((*p).getPos().distance((particles.at((*p).getTop()).getPos())) > TEAR_THRESH){
+			transitionModel((*p));
+			if((*p).getBottom() != -1)
+			transitionModel((particles.at((*p).getBottom())));
+			
+			if((*p).getLeft() != -1)
+			transitionModel((particles.at((*p).getLeft())));
+			
+			if((*p).getRight() != -1)
+			transitionModel((particles.at((*p).getRight())));
+
+			transitionModel(particles.at((*p).getTop()));
+
+			if(particles.at((*p).getTop()).getLeft() != -1 && particles.at((particles.at((*p).getTop())).getLeft()).getWarp() == 0 && particles.at((particles.at((*p).getTop())).getLeft()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getTop())).getLeft()));
+
+			if(particles.at((*p).getTop()).getRight() != -1 && particles.at((particles.at((*p).getTop())).getRight()).getWarp() == 0 && particles.at((particles.at((*p).getTop())).getRight()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getTop())).getRight()));
+
+			if(particles.at((*p).getTop()).getTop() != -1 && particles.at((particles.at((*p).getTop())).getTop()).getWarp() == 0 && particles.at((particles.at((*p).getTop())).getTop()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getTop())).getTop()));
+
+		}
+	}
+
+	if((*p).getBottom() != -1){
+		if((*p).getPos().distance((particles.at((*p).getBottom()).getPos())) > TEAR_THRESH){
+			transitionModel((*p));
+			
+			if((*p).getLeft() != -1)
+			transitionModel((particles.at((*p).getLeft())));
+			
+			if((*p).getRight() != -1)
+			transitionModel((particles.at((*p).getRight())));
+			
+			if((*p).getTop() != -1)
+			transitionModel((particles.at((*p).getTop())));
+
+			transitionModel(particles.at((*p).getBottom()));
+
+			if(particles.at((*p).getBottom()).getLeft() != -1 && particles.at((particles.at((*p).getBottom())).getLeft()).getWarp() == 0 && particles.at((particles.at((*p).getBottom())).getLeft()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getBottom())).getLeft()));
+
+			if(particles.at((*p).getBottom()).getRight() != -1 && particles.at((particles.at((*p).getBottom())).getRight()).getWarp() == 0 && particles.at((particles.at((*p).getBottom())).getRight()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getBottom())).getRight()));
+
+			if(particles.at((*p).getBottom()).getBottom() != -1 && particles.at((particles.at((*p).getBottom())).getBottom()).getWarp() == 0 && particles.at((particles.at((*p).getBottom())).getBottom()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getBottom())).getBottom()));
+		}
+	}
+
+	if((*p).getRight() != -1){
+		if((*p).getPos().distance((particles.at((*p).getRight()).getPos())) > TEAR_THRESH){
+			transitionModel((*p));
+			
+			if((*p).getLeft() != -1)
+			transitionModel((particles.at((*p).getLeft())));
+			
+			if((*p).getBottom() != -1)
+			transitionModel((particles.at((*p).getBottom())));
+			
+			if((*p).getTop() != -1)
+			transitionModel((particles.at((*p).getTop())));
+
+			transitionModel(particles.at((*p).getRight()));
+
+			if(particles.at((*p).getRight()).getTop() != -1 && particles.at((particles.at((*p).getRight())).getTop()).getWarp() == 0 && particles.at((particles.at((*p).getRight())).getTop()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getRight())).getTop()));
+
+			if(particles.at((*p).getRight()).getRight() != -1 && particles.at((particles.at((*p).getRight())).getRight()).getWarp() == 0 && particles.at((particles.at((*p).getRight())).getRight()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getRight())).getRight()));
+
+			if(particles.at((*p).getRight()).getBottom() != -1 && particles.at((particles.at((*p).getRight())).getBottom()).getWarp() == 0 && particles.at((particles.at((*p).getRight())).getBottom()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getRight())).getBottom()));
+		}
+	}
+	if((*p).getLeft() != -1){
+		if((*p).getPos().distance((particles.at((*p).getLeft()).getPos())) > TEAR_THRESH){
+			transitionModel((*p));
+
+			if((*p).getRight() != -1)
+			transitionModel((particles.at((*p).getRight())));
+			
+			if((*p).getBottom() != -1)
+			transitionModel((particles.at((*p).getBottom())));
+			
+			if((*p).getTop() != -1)
+			transitionModel((particles.at((*p).getTop())));
+
+			transitionModel(particles.at((*p).getLeft()));
+
+			if(particles.at((*p).getLeft()).getTop() != -1 && particles.at((particles.at((*p).getLeft())).getTop()).getWarp() == 0 && particles.at((particles.at((*p).getLeft())).getTop()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getLeft())).getTop()));
+
+			if(particles.at((*p).getLeft()).getLeft() != -1&& particles.at((particles.at((*p).getLeft())).getLeft()).getWarp() == 0 && particles.at((particles.at((*p).getLeft())).getLeft()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getLeft())).getLeft()));
+
+			if(particles.at((*p).getLeft()).getBottom() != -1 && particles.at((particles.at((*p).getLeft())).getBottom()).getWarp() == 0 && particles.at((particles.at((*p).getLeft())).getBottom()).getWeft() == 0)
+			transitionModel(particles.at(particles.at(((*p).getLeft())).getBottom()));
+		}
+	}
+}*/
+
 void Cloth::checkRipDistance(Particle* p){
 
-	//if((*p).getWarp() == 0 && (*p).getWeft() == 0){
+	if((*p).getWarp() == 0 && (*p).getWeft() == 0){
 
 	if((*p).getTop() != -1){
 		if((*p).getPos().distance((particles.at((*p).getTop()).getPos())) > THETA_DIST){
@@ -350,7 +479,46 @@ void Cloth::checkRipDistance(Particle* p){
 			particles.at((*p).getRight()).setLeft(-1);
 			(*p).setRight(-1);
 		}
-		//	}
+			}
+	}
+}
+
+void Cloth::checkRipDistance2(Particle* p){
+
+	if((*p).getWarp() == 0 && (*p).getWeft() == 0){
+
+	if((*p).getTop() != -1){
+		if((*p).getPos().distance((particles.at((*p).getTop()).getPos())) > 1.5){
+			//(*p).setGone();
+			//(*p).setNoConstraints();
+			particles.at((*p).getTop()).setBottom(-1);
+			(*p).setTop(-1);
+		}
+	}
+	if((*p).getBottom() != -1){
+		if((*p).getPos().distance((particles.at((*p).getBottom()).getPos())) > 1.5){
+			//(*p).setGone();
+			//(*p).setNoConstraints();
+			particles.at((*p).getBottom()).setTop(-1);
+			(*p).setBottom(-1);
+		}
+	}
+	if((*p).getLeft() != -1){
+		if((*p).getPos().distance((particles.at((*p).getLeft()).getPos())) > 1.5){
+			//(*p).setGone();
+			//(*p).setNoConstraints();
+			particles.at((*p).getLeft()).setRight(-1);
+			(*p).setLeft(-1);
+		}
+	}
+	if((*p).getRight() != -1){
+		if((*p).getPos().distance((particles.at((*p).getRight()).getPos())) > 1.5){
+			//(*p).setGone();
+			//(*p).setNoConstraints();
+			particles.at((*p).getRight()).setLeft(-1);
+			(*p).setRight(-1);
+		}
+			}
 	}
 }
 
@@ -362,10 +530,27 @@ void Cloth::ballCollision(const Vec3 center, const float radius){
 			float l = v.length();
 			if(v.length() < radius){
 				(*particle).offsetPos(v.normalized()*(radius-1));
-				
-			//std::cout<< "INDEX: " << distance(particles.begin(), particle) << " SIZEE: " << particles.size()<< "\n"; 
+			std::cout<< "INDEX: " << distance(particles.begin(), particle) << " SIZEE: " << particles.size()<< "\n"; 
+			std::cout<<"TOP: "<<(*particle).getTop()<< " BOT: " << (*particle).getBottom() << " LEFT: " << (*particle).getLeft() << " RIGHT: " << (*particle).getRight() << "\n";
 				checkTearDistance(&(*particle));
 				checkRipDistance(&(*particle));
+			}
+		}
+	}
+}
+
+void Cloth::ballCollision2(const Vec3 center, const float radius){
+	std::vector<Particle>::iterator particle;
+	for(particle = particles.begin(); particle != particles.end(); particle++){
+		if(!(*particle).getGone()){
+			Vec3 v = (*particle).getPos()-center;
+			float l = v.length();
+			if(v.length() < radius){
+				(*particle).offsetPos(v.normalized()*(radius-1));
+			std::cout<< "INDEX: " << distance(particles.begin(), particle) << " SIZEE: " << particles.size()<< "\n"; 
+			std::cout<<"TOP: "<<(*particle).getTop()<< " BOT: " << (*particle).getBottom() << " LEFT: " << (*particle).getLeft() << " RIGHT: " << (*particle).getRight() << "\n";
+				checkTearDistance(&(*particle));
+				checkRipDistance2(&(*particle));
 			}
 		}
 	}

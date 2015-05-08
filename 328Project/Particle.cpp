@@ -4,7 +4,7 @@
 #include <iostream>
 
 Particle::Particle(Vec3 pos) : orig_pos(pos), pos(pos), old_pos(pos),acceleration(Vec3(0,0,0)), mass(1), 
-	movable(true), accumulated_normal(Vec3(0,0,0)), gone(false), top(-1), left(-1), right(-1), bottom(-1), warp(0), weft(0), noConstraints(false){
+	movable(true), accumulated_normal(Vec3(0,0,0)), gone(false), top(-1), left(-1), right(-1), bottom(-1), warp(0), weft(0), noConstraints(false), index(0){
 }
 
 void Particle::addForce(Vec3 f) {
@@ -129,4 +129,12 @@ bool Particle::getNoConstraints(){
 
 bool Particle::getMovable(){
 	return movable;
+}
+
+void Particle::setIndex(int i){
+	index = i;
+}
+
+int Particle::getIndex(){
+	return index;
 }

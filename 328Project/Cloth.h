@@ -33,10 +33,12 @@ public:
 	void timeStep();
 	Vec3 calcClothNormal(Particle* p);
 	void addForce(const Vec3 direction);
-	void transitionModel(Particle* p);
+	void transitionModel(Particle &p);
 	void checkTearDistance(Particle* p);
-	void checkRipDistance(Particle* p);
+	void checkRipDistance(Particle* p);	
+	void checkRipDistance2(Particle* p);
 	void ballCollision(const Vec3 center, const float radius);
+	void ballCollision2(const Vec3 center, const float radius);
 };
 
 #endif
