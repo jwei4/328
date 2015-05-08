@@ -59,6 +59,8 @@ Vec3 Cloth::calcClothNormal(Particle *p){
 
 Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), num_particles_height(height/THICKNESS){
 	std::cout << "width: " << num_particles_width << " height: " << num_particles_height;
+	//particles.resize(num_particles_width*num_particles_height);
+	particles.clear();
 
 	// creating particles from (0,0,0) to (width,-height,0)
 	for(int x=0; x<num_particles_width; x++) {
@@ -67,16 +69,23 @@ Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), 
 			particles.push_back(Particle(pos)); // insert into particle vector
 
 			//set particle's neighbors 
-			if(getParticle(x,y)->getPos().f[0] == 0){
+			if((getParticle(x,y))->getPos().f[0] == 0){
 				getParticle(x,y)->setLeft(-1);
+			}else if ((getParticle(x,y))->getPos().f[0] == (num_particles_width-1)){
+				getParticle(x,y)->setRight(-1);
+				getParticle(x,y)->setLeft(x*num_particles_height+y-num_particles_height);
 			}else{
 				getParticle(x,y)->setLeft(x*num_particles_height+y-num_particles_height);
-				particles.at(x*num_particles_height+y-num_particles_height).setRight(x*num_particles_height+y);
+				(particles.at(x*num_particles_height+y-num_particles_height)).setRight(x*num_particles_height+y);
 			}
 
 			if(abs(getParticle(x,y)->getPos().f[1]) == 0){
 				getParticle(x,y)->setTop(-1);
-			}else{
+			}else if(abs(getParticle(x,y)->getPos().f[1] == (height-1))){
+				getParticle(x,y)->setBottom(-1);
+				getParticle(x,y)->setTop(y-1);
+			}
+			else{
 				getParticle(x,y)->setTop(x*num_particles_height+y-1);
 				particles.at(x*num_particles_height+y-1).setBottom(x*num_particles_height+y);
 				/*
@@ -85,14 +94,15 @@ Cloth::Cloth(float width, float height) : num_particles_width(width/THICKNESS), 
 			}
 		}
 	}
-
+	
+	std::cout<<"HIIII";
 	// Connecting neighbor particles with constraints 
 	for(int x=0; x<num_particles_width; x++) {
 		for(int y=0; y<num_particles_height; y++) {
-			if (x<num_particles_width-1) makeConstraint(getParticle(x,y),getParticle(x+1,y));
-			if (y<num_particles_height-1) makeConstraint(getParticle(x,y),getParticle(x,y+1));
+			if (x<num_particles_width-1) makeConstraint(getParticle(x,y),getRightP(x,y));
+			if (y<num_particles_height-1) makeConstraint(getParticle(x,y),getBotP(x,y));
 			if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(getParticle(x,y),getParticle(x+1,y+1));
-			if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(getParticle(x+1,y),getParticle(x,y+1));
+			if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(getRightP(x,y),getBotP(x,y));
 		}
 	}
 
@@ -237,29 +247,31 @@ void Cloth::transitionModel(Particle* p){
 		Vec3 clothNormal = calcClothNormal(&(*p));
 		Vec3 warp = (*p).getPos() + (clothNormal*(THICKNESS/2));
 		Vec3 weft = (*p).getPos() - (clothNormal*(THICKNESS/2));
-
-		/*	std::cout << "P X: " << (*p).getPos().f[0] << " Y: " << (*p).getPos().f[1] << " Z: " << (*p).getPos().f[2];
-		std::cout << "warP X: " << warp.f[0] << " Y: " << warp.f[1] << " Z: " << warp.f[2];
-		std::cout << "weft X: " << weft.f[0] << " Y: " << weft.f[1] << " Z: " << weft.f[2] << "\n";*/
-
 		(*p).setGone();
-		particles.push_back(Particle(warp));
+		Particle *TBA = new Particle(warp);
+		TBA->setTop((*p).getTop());
+		TBA->setBottom((*p).getBottom());
+		TBA->setLeft(-1);
+		TBA->setRight(-1);
+		TBA->setWarpHigh();
+		particles.push_back(*TBA);
+		std::cout << (*p).getTop() << "  " << (*p).getWeft() << " " << (*p).getWarp() << " \n";
 		particles.at((*p).getTop()).setBottom(particles.size()-1);
 		particles.at((*p).getBottom()).setTop(particles.size()-1);
-		(particles.at(particles.size()-1)).setTop((*p).getTop());
-		(particles.at(particles.size()-1)).setBottom((*p).getBottom());
-		(particles.at(particles.size()-1)).setWarpHigh();
 
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getTop()));
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getBottom()));
 
-		particles.push_back(Particle(weft));
+		Particle *TBAA = new Particle(weft);
+		TBAA->setLeft((*p).getLeft());
+		TBAA->setRight((*p).getRight());
+		TBAA->setTop(-1);
+		TBAA->setBottom(-1);
+		TBA->setWeftHigh();
+		particles.push_back(*TBAA);
+
 		particles.at((*p).getLeft()).setRight(particles.size()-1);
 		particles.at((*p).getRight()).setLeft(particles.size()-1);
-		(particles.at(particles.size()-1)).setLeft((*p).getLeft());
-		(particles.at(particles.size()-1)).setRight((*p).getRight());
-		(particles.at(particles.size()-1)).setWeftHigh();
-
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getLeft()));
 		makeConstraint(&(particles.at(particles.size()-1)), &particles.at((particles.at(particles.size()-1)).getRight()));
 
@@ -278,27 +290,27 @@ void Cloth::checkTearDistance(Particle* p){
 	if((*p).getTop() != -1){
 		if((*p).getPos().distance((particles.at((*p).getTop()).getPos())) > TEAR_THRESH){
 			transitionModel(&(*p));
-			transitionModel(&(particles.at((*p).getTop())));
+			transitionModel(&particles.at((*p).getTop()));
 		}
 	}
 
 	if((*p).getBottom() != -1){
 		if((*p).getPos().distance((particles.at((*p).getBottom()).getPos())) > TEAR_THRESH){
 			transitionModel(&(*p));
-			transitionModel(&(particles.at((*p).getBottom())));
+			transitionModel(&particles.at((*p).getBottom()));
 		}
 	}
 
 	if((*p).getRight() != -1){
 		if((*p).getPos().distance((particles.at((*p).getRight()).getPos())) > TEAR_THRESH){
 			transitionModel(&(*p));
-			transitionModel(&(particles.at((*p).getRight())));
+			transitionModel(&particles.at((*p).getRight()));
 		}
 	}
 	if((*p).getLeft() != -1){
 		if((*p).getPos().distance((particles.at((*p).getLeft()).getPos())) > TEAR_THRESH){
 			transitionModel(&(*p));
-			transitionModel(&(particles.at((*p).getLeft())));
+			transitionModel(&particles.at((*p).getLeft()));
 		}
 	}
 }
@@ -350,6 +362,8 @@ void Cloth::ballCollision(const Vec3 center, const float radius){
 			float l = v.length();
 			if(v.length() < radius){
 				(*particle).offsetPos(v.normalized()*(radius-1));
+				
+			//std::cout<< "INDEX: " << distance(particles.begin(), particle) << " SIZEE: " << particles.size()<< "\n"; 
 				checkTearDistance(&(*particle));
 				checkRipDistance(&(*particle));
 			}

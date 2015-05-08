@@ -22,7 +22,7 @@ float N_proj = 30;					//30-50
 
 int dragging = 1;
 
-Cloth cloth1(35, 15); // one Cloth object of the Cloth class
+Cloth cloth1(15, 15); // one Cloth object of the Cloth class
 Vec3 ball_pos(10,-7,0);
 //Vec3 ball_pos2(14,-5,0);
 float ball_radius = 2;
@@ -110,6 +110,7 @@ void winReshapeFcn (int w, int h) {
 
 void display(void) {
 	ball_time++;
+	if(ball_pos.f[2] > -6.8)
 	ball_pos.f[2] = cos(ball_time/100.0)*7;
 	//ball_pos2.f[2] = cos(ball_time/100.0)*7;
 
